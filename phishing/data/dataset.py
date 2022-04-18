@@ -29,14 +29,14 @@ class Dataset():
         f"""The constructor for this class, called automatically when an
         instance of the class is created. This function reads the dataset as a
         CSV file into a Pandas dataframe object, storing the whole dataframe on
-        the object as well as creating ``X`` and ``y`` attributes which
-        represent the data and the truth values respectively. It also sets up
-        empty attributes for the X/y slices of the data for training,
-        validation and testing.
+        the object as well as creating `X` and `y` attributes which represent
+        the data and the truth values respectively. It also sets up empty
+        attributes for the X/y slices of the data for training, validation and
+        testing.
 
         The constructor takes one positional argument:
 
-            ``file``: The name of the file to read the data from. Defaults to
+            `file`: The name of the file to read the data from. Defaults to
             {DATASET}
         """
         self.file = file
@@ -56,9 +56,43 @@ class Dataset():
 
     def create_split(
         self, test, validate=None, *, random_test=None, random_validate=None
-    ):
-        """Creates the split between training, validation and testing segmennts
-        of the dataset."""
+    ) -> None:
+        """Creates the split between training, validation and testing segments
+        of the dataset.
+
+        This method takes two positional arguments:
+
+            `test`: The percentage of the data that should be sliced out
+            (randomly) for testing the model. The value should be a float
+            between 0 and 1, non-inclusive.
+            `validate`: An optional second parameter to specify what percentage
+            of the data should be set aside for validation. This is a share of
+            the whole, not of the training split. For example, if `test` and
+            `validate` are both set to 0.20 (requesting a 60/20/20 split) then
+            the validation slice will actually be 25% of the training slice so
+            as to meet the requested percentage. If this parameter is not
+            given, it defaults to the value of the `test` parameter.
+
+        This method also recognizes two optional keyword arguments:
+
+            `random_test`: If given, should be an integer that will be used as
+            the random seed in the selection of the test slice of data.
+            Defaults to `None`, which will cause `train_test_split` to use the
+            existing randomness setting.
+            `random_validate`: As above, for the selection of the validation
+            data slice.
+
+        Upon return, the calling object will have eight attributes filled in:
+
+            `X_train`/`y_train`: The slices of the data that will be used for
+            training.
+            `X_validate`/`y_validate`: The slices of the data that will be
+            used for validation.
+            `X_test`/`y_test`: The slices of the data that will be used for
+            testing.
+            `X_base`/`y_base`: The combined training and validation data, for
+            use during the final testing of the model.
+        """
         if not validate:
             validate = test / (1 - test)
 
