@@ -6,6 +6,7 @@ train/validate/test split of the data.
 """
 
 import os
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -45,6 +46,12 @@ class Dataset():
         self.y = self.df["status"].transform(
             lambda v: 1 if v == "phishing" else 0
         )
+
+        # Add the bias column to X.
+        bias = pd.DataFrame(np.ones(self.X.shape[0]), columns=["bias"])
+        self.X = pd.concat([bias, self.X], axis=1)
+
+        # Create placeholders for the split buckets.
         self.X_base = None
         self.X_train = None
         self.X_validate = None
