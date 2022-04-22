@@ -25,7 +25,7 @@ def main():
         for alpha in [0.1, 0.2, 0.3]:
             print(f"  Creating LogisticRegression with α={alpha}")
             lr = LogisticRegression().fit(ds.X_train, ds.y_train, alpha=alpha)
-            vals = lr.trail
+            vals = lr.audit_trail
             ax.plot(range(1, len(vals) + 1), vals, label=f"α={alpha}")
 
         ax.set_yscale("log")
