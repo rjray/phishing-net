@@ -13,6 +13,16 @@ from sklearn.model_selection import train_test_split
 _this_dir = os.path.dirname(__file__)
 DATASET = os.path.abspath(f"{_this_dir}/../../data/dataset_phishing.csv")
 """The default dataset file. See references."""
+UNUSED_FEATURES = [
+    "whois_registered_domain",
+    "domain_registration_length",
+    "domain_age",
+    "web_traffic",
+    "dns_record",
+    "google_index",
+    "page_rank",
+]
+"""Features of the dataset not used in the regression by default."""
 
 
 class Dataset():
@@ -26,7 +36,7 @@ class Dataset():
     constructor.
     """
 
-    def __init__(self, file=DATASET) -> None:
+    def __init__(self, file=DATASET, *, all=False, nobias=False) -> None:
         f"""The constructor for this class, called automatically when an
         instance of the class is created. This function reads the dataset as a
         CSV file into a Pandas dataframe object, storing the whole dataframe on
@@ -39,17 +49,37 @@ class Dataset():
 
             `file`: The name of the file to read the data from. Defaults to
             {DATASET}
+
+        The constructor also recognizes two optional keyword arguments:
+
+            `all`: If passed and not `False`, then all features from the
+            dataset are used. If not passed (or passed as `False`), then some
+            features are dropped and not considered for classification.
+            `nobias`: If passed and not `False`, then the bias column will not
+            be added to the constructed feature matrix. This is useful for
+            using the dataset with SciKit classes which do not need the
+            explicit bias column present.
         """
         self.file = file
         self.df = pd.read_csv(file)
+        # Always drop these two from the feature matrix:
         self.X = self.df.drop(["url", "status"], axis=1)
+        # Unless "all" is true, also drop these:
+        if not all:
+            self.X.drop(UNUSED_FEATURES, axis=1, inplace=True)
         self.y = self.df["status"].transform(
             lambda v: 1 if v == "phishing" else 0
         )
 
-        # Add the bias column to X.
-        bias = pd.DataFrame(np.ones(self.X.shape[0]), columns=["bias"])
-        self.X = pd.concat([bias, self.X], axis=1)
+        # Normalize the features of X with Min-Max Normalization
+        self.X = (self.X - self.X.min()) / (self.X.max() - self.X.min())
+        # That may leave some NaN values in self.X, replace them with 0.
+        self.X = self.X.fillna(0)
+
+        # Add the bias column to X unless "nobias" is set to True.
+        if not nobias:
+            bias = pd.DataFrame(np.ones(self.X.shape[0]), columns=["bias"])
+            self.X = pd.concat([bias, self.X], axis=1)
 
         # Create placeholders for the split buckets.
         self.X_base = None
@@ -112,4 +142,4 @@ class Dataset():
                 random_state=random_validate
             )
 
-        return
+        return self
