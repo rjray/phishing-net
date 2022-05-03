@@ -13,7 +13,102 @@ from sklearn.model_selection import train_test_split
 _this_dir = os.path.dirname(__file__)
 DATASET = os.path.abspath(f"{_this_dir}/../../data/dataset_phishing.csv")
 """The default dataset file. See references."""
-UNUSED_FEATURES = [
+
+# The following lists define the subsets of features from the datasets. These
+# will be further combined into sets that can be selectively dropped from the
+# overall dataset.
+
+URL_STRUCT_FEATURES = [
+    "ip",
+    "https_token",
+    "punycode",
+    "port",
+    "tld_in_path",
+    "tld_in_subdomain",
+    "abnormal_subdomain",
+    "prefix_suffix",
+    "random_domain",
+    "shortening_service",
+    "path_extension",
+    "domain_in_brand",
+    "brand_in_subdomain",
+    "brand_in_path",
+    "suspecious_tld",
+    "statistical_report",
+]
+URL_STAT_FEATURES = [
+    "length_url",
+    "length_hostname",
+    "nb_dots",
+    "nb_hyphens",
+    "nb_at",
+    "nb_qm",
+    "nb_and",
+    "nb_or",
+    "nb_eq",
+    "nb_underscore",
+    "nb_tilde",
+    "nb_percent",
+    "nb_slash",
+    "nb_star",
+    "nb_colon",
+    "nb_comma",
+    "nb_semicolumn",
+    "nb_dollar",
+    "nb_space",
+    "nb_www",
+    "nb_com",
+    "nb_dslash",
+    "http_in_path",
+    "ratio_digits_url",
+    "ratio_digits_host",
+    "nb_subdomains",
+    "nb_redirection",
+    "nb_external_redirection",
+    "length_words_raw",
+    "char_repeat",
+    "shortest_words_raw",
+    "shortest_word_host",
+    "shortest_word_path",
+    "longest_words_raw",
+    "longest_word_host",
+    "longest_word_path",
+    "avg_words_raw",
+    "avg_word_host",
+    "avg_word_path",
+    "phish_hints",
+]
+
+CONTENT_HYPERLINKS_FEATURES = [
+    "nb_hyperlinks",
+    "ratio_intHyperlinks",
+    "ratio_extHyperlinks",
+    "ratio_nullHyperlinks",
+    "nb_extCSS",
+    "ratio_intRedirection",
+    "ratio_extRedirection",
+    "ratio_intErrors",
+    "ratio_extErrors",
+    "external_favicon",
+    "links_in_tags",
+    "ratio_intMedia",
+    "ratio_extMedia",
+]
+CONTENT_ABNORMALNESS_FEATURES = [
+    "login_form",
+    "submit_email",
+    "sfh",
+    "iframe",
+    "popup_window",
+    "safe_anchor",
+    "onmouseover",
+    "right_clic",
+    "empty_title",
+    "domain_in_title",
+    "domain_with_copyright",
+]
+
+THIRD_PARTY_FEATURES = [
     "whois_registered_domain",
     "domain_registration_length",
     "domain_age",
@@ -22,7 +117,20 @@ UNUSED_FEATURES = [
     "google_index",
     "page_rank",
 ]
-"""Features of the dataset not used in the regression by default."""
+
+FEATURES_MAP = {
+    "url": URL_STRUCT_FEATURES + URL_STAT_FEATURES,
+    "url_struct": URL_STRUCT_FEATURES,
+    "url_stat": URL_STAT_FEATURES,
+    "content": CONTENT_HYPERLINKS_FEATURES + CONTENT_ABNORMALNESS_FEATURES,
+    "content_hyperlinks": CONTENT_HYPERLINKS_FEATURES,
+    "content_abnormalness": CONTENT_ABNORMALNESS_FEATURES,
+    "third_party": THIRD_PARTY_FEATURES,
+}
+"""Features of the dataset broken down into groups for potential exclusion."""
+
+CACHE_MAP = dict()
+"""A dict/map for caching the CSV file(s) read in."""
 
 
 class Dataset():
@@ -36,7 +144,7 @@ class Dataset():
     constructor.
     """
 
-    def __init__(self, file=DATASET, *, all=False, nobias=False) -> None:
+    def __init__(self, file=DATASET, *, exclude=None, nobias=False) -> None:
         f"""The constructor for this class, called automatically when an
         instance of the class is created. This function reads the dataset as a
         CSV file into a Pandas dataframe object, storing the whole dataframe on
@@ -52,24 +160,37 @@ class Dataset():
 
         The constructor also recognizes two optional keyword arguments:
 
-            `all`: If passed and not `False`, then all features from the
-            dataset are used. If not passed (or passed as `False`), then some
-            features are dropped and not considered for classification.
+            `exclude`: If passed and not `None`, then it indicates subsets of
+            features that should be dropped from the dataset after it is read
+            but before it is returned as an object. The value may be a string
+            or a list of strings.
             `nobias`: If passed and not `False`, then the bias column will not
             be added to the constructed feature matrix. This is useful for
             using the dataset with SciKit classes which do not need the
             explicit bias column present.
         """
-        self.file = file
-        self.df = pd.read_csv(file)
+
+        # First get the data itself, either from the cache or from file:
+        if file in CACHE_MAP:
+            df = CACHE_MAP[file]
+        else:
+            df = pd.read_csv(file)
+            CACHE_MAP[file] = df
+
         # Always drop these two from the feature matrix:
-        self.X = self.df.drop(["url", "status"], axis=1)
-        # Unless "all" is true, also drop these:
-        if not all:
-            self.X.drop(UNUSED_FEATURES, axis=1, inplace=True)
-        self.y = self.df["status"].transform(
+        self.X = df.drop(["url", "status"], axis=1)
+        self.y = df["status"].transform(
             lambda v: 1 if v == "phishing" else 0
         )
+
+        # If one or more subsets of the features were requested for exclusion,
+        # process that here.
+        if exclude:
+            if isinstance(exclude, str):
+                self.X.drop(FEATURES_MAP[exclude], axis=1, inplace=True)
+            else:
+                for fea_set in exclude:
+                    self.X.drop(FEATURES_MAP[fea_set], axis=1, inplace=True)
 
         # Normalize the features of X with Min-Max Normalization
         self.X = (self.X - self.X.min()) / (self.X.max() - self.X.min())
@@ -90,6 +211,11 @@ class Dataset():
         self.y_train = None
         self.y_validate = None
         self.y_test = None
+
+        # Note the file used for this object:
+        self.file = file
+
+        return
 
     def create_split(
         self, test, validate=None, *, random_test=None, random_validate=None
