@@ -16,7 +16,8 @@ DATASET = os.path.abspath(f"{_this_dir}/../../data/dataset_phishing.csv")
 
 # The following lists define the subsets of features from the datasets. These
 # will be further combined into sets that can be selectively dropped from the
-# overall dataset.
+# overall dataset. This includes some combinations and subsets that likely will
+# not be used in the long run.
 
 URL_STRUCT_FEATURES = [
     "ip",
