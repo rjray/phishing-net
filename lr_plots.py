@@ -14,8 +14,9 @@ from phishing.classifier.logistic import LogisticRegression
 
 def main():
     datasets = [
-        (Dataset().create_split(0.2), "regression-regular.png"),
-        (Dataset(all=True).create_split(0.2), "regression-all.png"),
+        (Dataset(exclude="third_party").create_split(0.2),
+         "regression-regular.png"),
+        (Dataset().create_split(0.2), "regression-all.png"),
     ]
 
     for ds, file in datasets:
