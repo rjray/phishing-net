@@ -1,4 +1,4 @@
-"""LogisticRegression Module
+"""Logistic Regression Module
 
 This module implements logistic regression using stochastic gradient descent,
 and is informed by this web resource:
@@ -28,7 +28,7 @@ class LogisticRegression():
         self.epsilon = None
         self.audit_trail = None
 
-    def fit(self, X, y, *, alpha=0.1, iterations=100, epsilon=None):
+    def fit(self, X, y, *, alpha=0.1, iterations=MAX_ITERS, epsilon=None):
         f"""Fit a model using the logistic regression algorithm. Takes the
         feature matrix and target vector and derives the weights that can then
         be used for later predictions.
@@ -45,7 +45,7 @@ class LogisticRegression():
             calculations, defaults to 0.1.
             `iterations`: The number of iterations to run, rather than
             iterating until the mean square of deltas falls below a given ε
-            value. Defaults to 100.
+            value. Defaults to {MAX_ITERS}.
             `epsilon`: If given, a value to use in deciding when to stop
             iterating the algorithm. Defaults to `None`.
 
@@ -97,7 +97,7 @@ class LogisticRegression():
 
         # Save all the relevant parameters from this fitting:
         self.current_weights = weights
-        self.iterations = iterations
+        self.iterations = iteration
         self.alpha = alpha
         self.epsilon = epsilon
         self.audit_trail = trail
