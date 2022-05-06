@@ -145,7 +145,7 @@ class Dataset():
     constructor.
     """
 
-    def __init__(self, file=DATASET, *, exclude=None, nobias=False) -> None:
+    def __init__(self, file=DATASET, *, exclude=None, bias=True) -> None:
         f"""The constructor for this class, called automatically when an
         instance of the class is created. This function reads the dataset as a
         CSV file into a Pandas dataframe object, storing the whole dataframe on
@@ -165,10 +165,10 @@ class Dataset():
             features that should be dropped from the dataset after it is read
             but before it is returned as an object. The value may be a string
             or a list of strings.
-            `nobias`: If passed and not `False`, then the bias column will not
-            be added to the constructed feature matrix. This is useful for
-            using the dataset with SciKit classes which do not need the
-            explicit bias column present.
+            `bias`: If not `False`, then the bias column will be added to the
+            constructed feature matrix as the first column. Defaults to `True`.
+            Can be used to suppress the bias column for cases such as scikit
+            classes that do not need it explicitly provided.
         """
 
         # First get the data itself, either from the cache or from file:
@@ -199,7 +199,7 @@ class Dataset():
         self.X = self.X.fillna(0)
 
         # Add the bias column to X unless "nobias" is set to True.
-        if not nobias:
+        if bias:
             bias = pd.DataFrame(np.ones(self.X.shape[0]), columns=["bias"])
             self.X = pd.concat([bias, self.X], axis=1)
 
