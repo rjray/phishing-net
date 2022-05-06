@@ -88,6 +88,8 @@ class NeuralNetwork():
             error /= num_samples
             # Save it on the "audit trail":
             trail.append(error)
+            # Bump the iteration counter:
+            iteration += 1
 
             if stop_by_epsilon:
                 if error < epsilon:
@@ -95,8 +97,6 @@ class NeuralNetwork():
             else:
                 if iteration == iterations:
                     break
-
-            iteration += 1
 
         self.iterations = iteration
         self.alpha = alpha
