@@ -14,8 +14,8 @@ def sigmoid(x):
 
 # δ(σ)
 def d_sigmoid(x):
-    predict = sigmoid(x)
-    return predict * (1 - predict)
+    x = sigmoid(x)
+    return x * (1 - x)
 
 
 # tanh
