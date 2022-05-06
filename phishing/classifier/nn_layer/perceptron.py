@@ -23,12 +23,12 @@ class Perceptron(Layer):
 
     def forward(self, input):
         self.input = input
-        output = np.dot(input, self.weights) + self.bias
+        self.output = np.dot(input, self.weights) + self.bias
 
-        return self.activation(output)
+        return self.activation(self.output)
 
     def backward(self, output_err, alpha):
-        output_err = self.dActivation(self.input) * output_err
+        output_err = self.dActivation(self.output) * output_err
         input_err = np.dot(output_err, self.weights.T)
         weights_err = np.dot(self.input.T, output_err)
 

@@ -8,10 +8,11 @@ mainly to allow type-testing of layers passed to the `add` method of the
 
 class Layer():
     def __init__(self, inputs, outputs) -> None:
-        # Each layer needs to hold on to its input value during the forward
-        # propagation, because it's needed in the calculations of the backward
-        # propagation.
+        # Each layer needs to hold on to its input and output values during the
+        # forward propagation, because they're needed in the calculations of
+        # the backward propagation.
         self.input = None
+        self.output = None
         # Also store the input/output sizes, so that the `NeuralNetwork` can
         # sanity-check the stacking of layers.
         self.inputs = inputs
