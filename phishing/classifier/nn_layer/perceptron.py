@@ -7,11 +7,12 @@ This module implements a fully-connected perceptron layer for use with the
 import numpy as np
 
 from .base import Layer
+from ..nn_utils.activation import sigmoid, d_sigmoid
 
 
 class Perceptron(Layer):
     def __init__(
-        self, inputs, outputs, *, activation=None, dActivation=None
+        self, inputs, outputs, *, activation=sigmoid, dActivation=d_sigmoid
     ) -> None:
         super().__init__(inputs, outputs)
 
