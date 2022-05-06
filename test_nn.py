@@ -12,8 +12,8 @@ from phishing.classifier.neural_net import NeuralNetwork
 from phishing.classifier.nn_layer.perceptron import Perceptron
 
 # training data
-x_train = np.array([[[0, 0]], [[0, 1]], [[1, 0]], [[1, 1]]])
-y_train = np.array([[[0]], [[1]], [[1]], [[0]]])
+x_train = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y_train = np.array([[0], [1], [1], [0]])
 
 # net = NeuralNetwork()
 # net.add(Perceptron(2, 3))
