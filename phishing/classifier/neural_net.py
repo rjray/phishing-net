@@ -130,4 +130,8 @@ class NeuralNetwork():
 
             prediction.append(output)
 
+        prediction = np.array(prediction)
+        if len(prediction.shape) == 3 and prediction.shape[1] == 1:
+            prediction.reshape((prediction.shape[0], prediction.shape[2]))
+
         return prediction
