@@ -23,6 +23,10 @@ class Perceptron(Layer):
 
     def forward(self, input):
         self.input = input
+        # In order to allow the input to come from a typical 2-dimensional
+        # matrix (as Pandas will create from reading a CSV file), we check to
+        # see if the sample is a vector and if so make it a 1xN matrix. Without
+        # this, the backward() function would have a problem with it.
         if len(self.input.shape) == 1:
             self.input = np.array([self.input])
         self.output = np.dot(input, self.weights) + self.bias

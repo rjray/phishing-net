@@ -73,12 +73,7 @@ class NeuralNetwork():
 
             error = 0
             for idx in range(num_samples):
-                # Do the forward propagation. In order to allow X to be a
-                # typical 2-dimensional matrix (as Pandas will create from
-                # reading the CSV file), we check to see if the sample is a
-                # vector and if so make it a 1xN matrix. Note that this step
-                # is not done in predict(), below, because it is only relevant
-                # to the backward propagation step.
+                # Do the forward propagation.
                 output = X[idx]
                 for layer in self.layers:
                     output = layer.forward(output)
