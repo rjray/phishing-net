@@ -29,9 +29,8 @@ def main():
             vals = lr.audit_trail
             ax.plot(range(1, len(vals) + 1), vals, label=f"α={alpha}")
 
-        ax.set_yscale("log")
         ax.set_xlabel("Gradient Descent Iteration")
-        ax.set_ylabel("Mean Squared Update (log)")
+        ax.set_ylabel("Mean Squared Error")
         ax.legend()
         plt.savefig(file)
         print(f"{file} written.")
