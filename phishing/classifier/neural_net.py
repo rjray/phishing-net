@@ -80,8 +80,6 @@ class NeuralNetwork():
                 # is not done in predict(), below, because it is only relevant
                 # to the backward propagation step.
                 output = X[idx]
-                if len(output.shape) == 1:
-                    output = np.array([output])
                 for layer in self.layers:
                     output = layer.forward(output)
 
@@ -131,7 +129,10 @@ class NeuralNetwork():
             prediction.append(output)
 
         prediction = np.array(prediction)
+        # If the resulting shape is (N, 1, M), remove the spurious inner 1.
         if len(prediction.shape) == 3 and prediction.shape[1] == 1:
-            prediction.reshape((prediction.shape[0], prediction.shape[2]))
+            prediction = prediction.reshape(
+                (prediction.shape[0], prediction.shape[2])
+            )
 
         return prediction
