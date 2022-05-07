@@ -23,6 +23,8 @@ class Perceptron(Layer):
 
     def forward(self, input):
         self.input = input
+        if len(self.input.shape) == 1:
+            self.input = np.array([self.input])
         self.output = np.dot(input, self.weights) + self.bias
 
         return self.activation(self.output)
