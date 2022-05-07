@@ -7,19 +7,21 @@ This module implements a fully-connected perceptron layer for use with the
 import numpy as np
 
 from .base import Layer
-from ..nn_utils.activation import sigmoid, d_sigmoid
+from ..nn_utils.activation import SIGMOID
 
 
 class Perceptron(Layer):
     def __init__(
-        self, inputs, outputs, *, activation=sigmoid, dActivation=d_sigmoid
+        self, inputs, outputs, *, activation=SIGMOID
     ) -> None:
         super().__init__(inputs, outputs)
 
         self.weights = np.random.rand(inputs, outputs) - 0.5
         self.bias = np.random.rand(1, outputs) - 0.5
-        self.activation = activation
-        self.dActivation = dActivation
+        self.activation = activation["activation"]
+        self.dActivation = activation["derivative"]
+
+        return
 
     def forward(self, input):
         self.input = input

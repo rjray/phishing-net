@@ -10,13 +10,16 @@ import numpy as np
 
 from .nn_layer.base import Layer
 from .nn_utils.loss import mse, d_mse
+from .nn_utils.activation import SIGMOID
 
 MAX_ITERS = 5000
 """Maximum number of iterations to be done when training a network."""
 
 
 class NeuralNetwork():
-    def __init__(self, *layers, lossFn=mse, dLossFn=d_mse) -> None:
+    def __init__(
+        self, *layers, lossFn=mse, dLossFn=d_mse, classify=SIGMOID
+    ) -> None:
         self.layers = []
         self.iterations = None
         self.alpha = None
@@ -25,6 +28,11 @@ class NeuralNetwork():
 
         self.lossFn = lossFn
         self.dLossFn = dLossFn
+
+        if isinstance(classify, dict):
+            self.classify = classify["classification"]
+        else:
+            self.classify = classify
 
         if len(layers):
             self.add(*layers)
@@ -107,10 +115,10 @@ class NeuralNetwork():
 
         return self
 
-    def predict(self, X):
+    def predict_proba(self, X):
         # Count the number of samples we're predicting over:
         num_samples = len(X)
-        prediction = []
+        probabilities = []
 
         # Apply the network to all samples:
         for idx in range(num_samples):
@@ -121,13 +129,16 @@ class NeuralNetwork():
             for layer in self.layers:
                 output = layer.forward(output)
 
-            prediction.append(output)
+            probabilities.append(output)
 
-        prediction = np.array(prediction)
+        probabilities = np.array(probabilities)
         # If the resulting shape is (N, 1, M), remove the spurious inner 1.
-        if len(prediction.shape) == 3 and prediction.shape[1] == 1:
-            prediction = prediction.reshape(
-                (prediction.shape[0], prediction.shape[2])
+        if len(probabilities.shape) == 3 and probabilities.shape[1] == 1:
+            probabilities = probabilities.reshape(
+                (probabilities.shape[0], probabilities.shape[2])
             )
 
-        return prediction
+        return probabilities
+
+    def predict(self, X):
+        return self.classify(self.predict_proba(X))
