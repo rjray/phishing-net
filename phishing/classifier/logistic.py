@@ -69,7 +69,7 @@ class LogisticRegression():
         stop_by_epsilon = True if epsilon is not None else False
         # Counter for the iterations.
         iteration = 0
-        # Keep an audit trail of the MSD rate.
+        # Keep an audit trail of the MSE rate.
         trail = []
 
         while True:
@@ -82,12 +82,12 @@ class LogisticRegression():
 
             predict = 1. / (1. + np.exp(-X.dot(weights)))
             deltas = X.T.dot((y - predict) * predict * (1 - predict))
-            msd = np.square(deltas).mean()
-            trail.append(msd)
+            mse = np.mean(np.power(y - predict, 2))
+            trail.append(mse)
             weights += alpha * deltas
 
             if stop_by_epsilon:
-                if msd < epsilon:
+                if mse < epsilon:
                     break
             else:
                 if iteration == iterations:
@@ -104,43 +104,27 @@ class LogisticRegression():
 
         return self
 
+    def predict_proba(self, X):
+        """Calculate the prediction probabilities for the given feature matrix
+        `X`. Returns the vector of probabilities with the same dimension as the
+        first dimension of `X`.
+
+        Positional parameters:
+
+            `X`: The feature matrix, usually a Numpy or Pandas matrix instance.
+        """
+
+        return 1. / (1. + np.exp(-X.dot(self.current_weights)))
+
     def predict(self, X):
         """Calculate a prediction for the given feature matrix `X`. Returns
-        the vector of predictions with the same dimension as first dimension of
-        `X`.
+        the vector of predictions with the same dimension as the first
+        dimension of `X`. Each value will be one of `0` or `1`, based on the
+        predicted probability.
 
         Positional parameters:
 
             `X`: The feature matrix, usually a Numpy or Pandas matrix instance.
         """
 
-        prediction = 1. / (1. + np.exp(-X.dot(self.current_weights)))
-        return np.array([0 if x <= 0.5 else 1 for x in prediction])
-
-    def risk(self, X, y):
-        """Return the calculated empirical risk of the fitted model by making
-        a prediction for the feature matrix `X` and comparing it to the target
-        vector `y`.
-
-        Positional parameters:
-
-            `X`: The feature matrix, usually a Numpy or Pandas matrix instance.
-            `y`: The target vector corresponding to the values of the features.
-            in `X`
-        """
-
-        prediction = self.predict(X)
-        return np.sum(np.abs(prediction - y)) / len(y)
-
-    def score(self, X, y):
-        """Return the accuracy score of the fitted model by making a prediction
-        for the feature matrix `X` and comparing it to the target vector `y`.
-
-        Positional parameters:
-
-            `X`: The feature matrix, usually a Numpy or Pandas matrix instance.
-            `y`: The target vector corresponding to the values of the features.
-            in `X`
-        """
-
-        return 1 - self.risk(X, y)
+        return np.array([0 if x < 0.5 else 1 for x in self.predict_proba(X)])
