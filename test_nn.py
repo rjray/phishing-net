@@ -27,4 +27,4 @@ net = NeuralNetwork(
 net.fit(x_train, y_train)
 prediction = net.predict(x_train)
 
-print(prediction.shape, prediction)
+print(prediction)
