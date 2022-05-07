@@ -33,4 +33,4 @@ def score(model, X, y):
         features in `X`
     """
 
-    return 1 - model.risk(X, y)
+    return 1 - risk(model, X, y)
