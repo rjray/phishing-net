@@ -20,7 +20,7 @@ def d_sigmoid(x):
 
 # Sigmoid classification
 def c_sigmoid(x):
-    out = [0 if xx <= 0.5 else 1 for xx in x.ravel()]
+    out = [0 if xx < 0.5 else 1 for xx in x.ravel()]
     return np.array(out).reshape(x.shape)
 
 
@@ -36,7 +36,7 @@ def d_tanh(x):
 
 # Tanh classification
 def c_tanh(x):
-    out = [0 if xx <= 0.0 else 1 for xx in x.ravel()]
+    out = [0 if xx < 0.0 else 1 for xx in x.ravel()]
     return np.array(out).reshape(x.shape)
 
 
