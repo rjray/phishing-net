@@ -203,6 +203,10 @@ class Dataset():
             bias = pd.DataFrame(np.ones(self.X.shape[0]), columns=["bias"])
             self.X = pd.concat([bias, self.X], axis=1)
 
+        # Convert the DataFrame elements to numpy arrays.
+        self.X = self.X.values
+        self.y = self.y.values
+
         # Create placeholders for the split buckets.
         self.X_base = None
         self.X_train = None
