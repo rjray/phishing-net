@@ -8,7 +8,7 @@ https://machinelearningmastery.com/logistic-regression-tutorial-for-machine-lear
 
 import numpy as np
 
-MAX_ITERS = 1000
+MAX_ITERS = 500
 """Maximum number of iterations to be done when testing by ε."""
 
 

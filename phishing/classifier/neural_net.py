@@ -12,7 +12,7 @@ from .nn_layer.base import Layer
 from .nn_utils.loss import mse, d_mse
 from .nn_utils.activation import SIGMOID
 
-MAX_ITERS = 5000
+MAX_ITERS = 100
 """Maximum number of iterations to be done when training a network."""
 
 
