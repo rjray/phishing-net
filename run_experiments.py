@@ -7,12 +7,14 @@ _root_dir = os.path.dirname(__file__)
 sys.path.append(_root_dir)
 
 import argparse
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 from operator import itemgetter
 from sklearn.linear_model import BayesianRidge
 from sklearn.metrics import confusion_matrix, roc_auc_score
 from sklearn.tree import DecisionTreeClassifier
+from timeit import default_timer as timer
 
 from phishing.classifier.logistic import LogisticRegression
 from phishing.classifier.neural_net import NeuralNetwork
@@ -56,6 +58,20 @@ def parse_command_line():
     return vars(parser.parse_args())
 
 
+def elapsed(start, end):
+    e = end - start
+    e_int = int(e)
+    mins = int(e_int / 60)
+    secs = e - (mins * 60)
+
+    if mins > 0:
+        elapsed = f"{mins}m{secs:.3f}s"
+    else:
+        elapsed = f"{secs:.3f}s"
+
+    return elapsed
+
+
 # Calculate the determinization of of the model's predictions against the given
 # threshold.
 def determinize(thresh, positives):
@@ -86,6 +102,7 @@ def run_one_model_data_combo(type, datatype, instance, ds, alphas):
     # the stats and the plots on the test data.
 
     print(f"Processing {type} model with {datatype} dataset.")
+    start = timer()
 
     X_base = ds.X_base
     y_base = ds.y_base
@@ -103,7 +120,7 @@ def run_one_model_data_combo(type, datatype, instance, ds, alphas):
 
         print(f"  α={alpha}")
         print("    Fitting base data")
-        model = instance.fit(X_base, y_base, alpha)
+        model = instance.fit(X_base, y_base, alpha=alpha)
         print("    Getting probabilities and prediction")
         probabilities = model.predict_proba(X_test)
         prediction = model.predict(X_test)
@@ -121,14 +138,21 @@ def run_one_model_data_combo(type, datatype, instance, ds, alphas):
         stats_data["score"] = 1 - stats_data["risk"]
         stats_data["youden"] = youden
         stats_data["curve_pts"] = curve_pts
+        stats_data["caption"] = f"{type} (data={datatype}, α={alpha})"
 
         results.append(stats_data)
 
+    end = timer()
+    print(f"Processing {type} complete ({elapsed(start, end)}).")
     return results
 
 
 def main():
     args = parse_command_line()
+    seed = args["seed"]
+    alphas = list(map(float, args["alphas"].split(",")))
+
+    # Set up the datasets:
 
     ds_labels = ["all", "no_3rd", "url_only"]
     # Set up the datasets for logistic regression (need the bias column):
@@ -137,12 +161,88 @@ def main():
         Dataset(exclude="third_party"),
         Dataset(exclude=["third_party", "content"])
     ]
+    for d in ds_bias:
+        d.create_split(0.2, random_test=seed, random_validate=seed)
     # Set up the datasets for the others (don't need the bias column):
     ds = [
         Dataset(bias=False),
         Dataset(bias=False, exclude="third_party"),
         Dataset(bias=False, exclude=["third_party", "content"])
     ]
+    for d in ds:
+        d.create_split(0.2, random_test=seed, random_validate=seed)
+
+    # Start gathering data.
+    run_started = timer()
+
+    # Obtain data for the logistic regression models:
+    lr_data = []
+    for ds_index in range(3):
+        lr_data.append(
+            run_one_model_data_combo(
+                "LogisticRegression",
+                ds_labels[ds_index],
+                LogisticRegression(),
+                ds_bias[ds_index],
+                alphas
+            )
+        )
+
+    # Now gather for the neural network models. Note that each dataset calls
+    # for slightly different NN instances.
+    nn_data = []
+    for ds_index in range(3):
+        dataset = ds[ds_index]
+        # Each of the three datasets is a different size
+        features = dataset.X.shape[1]
+        base2 = math.ceil(math.log2(features))
+        nn_list = []
+        labels = []
+        # We're going to run three different NNs over each dataset:
+        #
+        #   1. No hidden layer
+        #   2. One hidden layer of 2*base2 size
+        #   3. Two hidden layers of base2 size
+        labels.append(f"NeuralNetwork({features}, 1)")
+        nn_list.append(
+            NeuralNetwork(
+                Perceptron(features, 1)
+            )
+        )
+        labels.append(f"NeuralNetwork({features}, {base2 * 2}, 1)")
+        nn_list.append(
+            NeuralNetwork(
+                Perceptron(features, base2 * 2),
+                Perceptron(base2 * 2, 1)
+            )
+        )
+        labels.append(f"NeuralNetwork({features}, {base2}, {base2}, 1)")
+        nn_list.append(
+            NeuralNetwork(
+                Perceptron(features, base2),
+                Perceptron(base2, base2),
+                Perceptron(base2, 1)
+            )
+        )
+
+        row = []
+        for nn_index in range(3):
+            row.append(
+                run_one_model_data_combo(
+                    labels[nn_index],
+                    ds_labels[ds_index],
+                    nn_list[nn_index],
+                    dataset,
+                    alphas
+                )
+            )
+
+        nn_data.append(row)
+
+    run_finished = timer()
+    print(f"Total data-time: {elapsed(run_started, run_finished)}")
+
+    return
 
 
 if __name__ == "__main__":
