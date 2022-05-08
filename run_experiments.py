@@ -6,6 +6,10 @@ import sys
 _root_dir = os.path.dirname(__file__)
 sys.path.append(_root_dir)
 
+# TODO: Remove
+from pprint import PrettyPrinter
+PP = PrettyPrinter(indent=2)
+
 import argparse
 import math
 import matplotlib.pyplot as plt
@@ -134,11 +138,13 @@ def run_one_model_data_combo(type, datatype, instance, ds, alphas):
         )[0]
 
         stats_data["auc"] = roc_auc_score(y_test, probabilities)
+        print("   ", prediction.shape, y_test.shape, y_test.size)
         stats_data["risk"] = np.sum(np.abs(prediction - y_test)) / y_test.size
         stats_data["score"] = 1 - stats_data["risk"]
         stats_data["youden"] = youden
-        stats_data["curve_pts"] = curve_pts
+        # stats_data["curve_pts"] = curve_pts
         stats_data["caption"] = f"{type} (data={datatype}, α={alpha})"
+        PP.pprint(stats_data)
 
         results.append(stats_data)
 
@@ -203,20 +209,20 @@ def main():
         #   1. No hidden layer
         #   2. One hidden layer of 2*base2 size
         #   3. Two hidden layers of base2 size
-        labels.append(f"NeuralNetwork({features}, 1)")
+        labels.append(f"NeuralNetwork({features},1)")
         nn_list.append(
             NeuralNetwork(
                 Perceptron(features, 1)
             )
         )
-        labels.append(f"NeuralNetwork({features}, {base2 * 2}, 1)")
+        labels.append(f"NeuralNetwork({features},{base2 * 2},1)")
         nn_list.append(
             NeuralNetwork(
                 Perceptron(features, base2 * 2),
                 Perceptron(base2 * 2, 1)
             )
         )
-        labels.append(f"NeuralNetwork({features}, {base2}, {base2}, 1)")
+        labels.append(f"NeuralNetwork({features},{base2},{base2},1)")
         nn_list.append(
             NeuralNetwork(
                 Perceptron(features, base2),
