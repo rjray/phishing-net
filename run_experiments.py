@@ -167,17 +167,17 @@ def main():
     ds_labels = ["all", "no_3rd", "url_only"]
     # Set up the datasets for logistic regression (need the bias column):
     ds_bias = [
-        Dataset(),
-        Dataset(exclude="third_party"),
-        Dataset(exclude=["third_party", "content"])
+        Dataset(bias=True),
+        Dataset(bias=True, exclude="third_party"),
+        Dataset(bias=True, exclude=["third_party", "content"])
     ]
     for d in ds_bias:
         d.create_split(0.2, random_test=seed, random_validate=seed)
     # Set up the datasets for the others (don't need the bias column):
     ds = [
-        Dataset(bias=False),
-        Dataset(bias=False, exclude="third_party"),
-        Dataset(bias=False, exclude=["third_party", "content"])
+        Dataset(),
+        Dataset(exclude="third_party"),
+        Dataset(exclude=["third_party", "content"])
     ]
     for d in ds:
         d.create_split(0.2, random_test=seed, random_validate=seed)
@@ -187,7 +187,7 @@ def main():
 
     # Obtain data for the logistic regression models:
     lr_data = []
-    for ds_index in range(2, 3):
+    for ds_index in range(3):
         lr_data.append(
             run_one_model_data_combo(
                 "LogisticRegression",
@@ -201,7 +201,7 @@ def main():
     # Now gather for the neural network models. Note that each dataset calls
     # for slightly different NN instances.
     nn_data = []
-    for ds_index in range(2, 3):
+    for ds_index in range(3):
         dataset = ds[ds_index]
         # Each of the three datasets is a different size
         features = dataset.X.shape[1]

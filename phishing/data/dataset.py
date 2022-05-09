@@ -145,7 +145,7 @@ class Dataset():
     constructor.
     """
 
-    def __init__(self, file=DATASET, *, exclude=None, bias=True) -> None:
+    def __init__(self, file=DATASET, *, exclude=None, bias=False) -> None:
         f"""The constructor for this class, called automatically when an
         instance of the class is created. This function reads the dataset as a
         CSV file into a Pandas dataframe object, storing the whole dataframe on
@@ -166,9 +166,9 @@ class Dataset():
             but before it is returned as an object. The value may be a string
             or a list of strings.
             `bias`: If not `False`, then the bias column will be added to the
-            constructed feature matrix as the first column. Defaults to `True`.
-            Can be used to suppress the bias column for cases such as scikit
-            classes that do not need it explicitly provided.
+            constructed feature matrix as the first column. Defaults to
+            `False`. Can be used to create this column for classes that need
+            it.
         """
 
         # First get the data itself, either from the cache or from file:
