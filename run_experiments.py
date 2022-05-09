@@ -7,8 +7,8 @@ _root_dir = os.path.dirname(__file__)
 sys.path.append(_root_dir)
 
 # TODO: Remove
-from pprint import PrettyPrinter
-PP = PrettyPrinter(indent=2)
+# from pprint import PrettyPrinter
+# PP = PrettyPrinter(indent=2)
 
 import argparse
 import math
@@ -137,14 +137,18 @@ def run_one_model_data_combo(type, datatype, instance, ds, alphas):
             key=itemgetter(0), reverse=True
         )[0]
 
+        # The NeuralNetwork class will return a Mx1-shaped column vector. If
+        # we have that, reshape it to a row vector of dimension M.
+        if len(prediction.shape) == 2 and prediction.shape[1] == 1:
+            prediction = prediction.ravel()
+
         stats_data["auc"] = roc_auc_score(y_test, probabilities)
-        print("   ", prediction.shape, y_test.shape, y_test.size)
         stats_data["risk"] = np.sum(np.abs(prediction - y_test)) / y_test.size
         stats_data["score"] = 1 - stats_data["risk"]
         stats_data["youden"] = youden
-        # stats_data["curve_pts"] = curve_pts
+        stats_data["curve_pts"] = curve_pts
         stats_data["caption"] = f"{type} (data={datatype}, α={alpha})"
-        PP.pprint(stats_data)
+        # PP.pprint(stats_data)
 
         results.append(stats_data)
 
@@ -183,7 +187,7 @@ def main():
 
     # Obtain data for the logistic regression models:
     lr_data = []
-    for ds_index in range(3):
+    for ds_index in range(2, 3):
         lr_data.append(
             run_one_model_data_combo(
                 "LogisticRegression",
@@ -197,7 +201,7 @@ def main():
     # Now gather for the neural network models. Note that each dataset calls
     # for slightly different NN instances.
     nn_data = []
-    for ds_index in range(3):
+    for ds_index in range(2, 3):
         dataset = ds[ds_index]
         # Each of the three datasets is a different size
         features = dataset.X.shape[1]
