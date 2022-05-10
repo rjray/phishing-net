@@ -130,3 +130,5 @@ dmypy.json
 
 /data/dataset_phishing.csv
 /.vscode
+/plots
+/stats
