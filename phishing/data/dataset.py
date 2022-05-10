@@ -196,7 +196,9 @@ class Dataset():
         # Normalize the features of X with Min-Max Normalization
         self.X = (self.X - self.X.min()) / (self.X.max() - self.X.min())
         # That may leave some NaN values in self.X, replace them with 0.
-        self.X = self.X.fillna(0)
+        # self.X = self.X.fillna(0)
+        # Alternately, such columns would end up ALL zeros, so just drop them.
+        self.X.dropna(axis=1, inplace=True)
 
         # Add the bias column to X unless "nobias" is set to True.
         if bias:
