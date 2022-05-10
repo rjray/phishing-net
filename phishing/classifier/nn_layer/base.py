@@ -30,3 +30,9 @@ class Layer():
     # exception unless the implementing class provides their own version.
     def backward(self, output_err, alpha):
         raise NotImplementedError
+
+    # Abstract method for resetting a layer as part of fitting a new model to
+    # the containing neural network. This will raise an exception unless the
+    # implementing class provides their own version.
+    def reset(self):
+        raise NotImplementedError

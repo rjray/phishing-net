@@ -142,3 +142,7 @@ class NeuralNetwork():
 
     def predict(self, X):
         return self.classify(self.predict_proba(X))
+
+    def reset(self):
+        for layer in self.layers:
+            layer.reset()

@@ -16,8 +16,7 @@ class Perceptron(Layer):
     ) -> None:
         super().__init__(inputs, outputs)
 
-        self.weights = np.random.rand(inputs, outputs) - 0.5
-        self.bias = np.random.rand(1, outputs) - 0.5
+        self.reset()
         self.activation = activation["activation"]
         self.dActivation = activation["derivative"]
 
@@ -45,3 +44,7 @@ class Perceptron(Layer):
         self.bias -= alpha * output_err
 
         return input_err
+
+    def reset(self):
+        self.weights = np.random.rand(self.inputs, self.outputs) - 0.5
+        self.bias = np.random.rand(1, self.outputs) - 0.5
