@@ -1,0 +1,261 @@
+Processing LogisticRegression classifier
+  Using dataset all
+    α=0.1
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+    α=0.2
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+    α=0.3
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+  Dataset completed (4.042s)
+  Using dataset no_3rd
+    α=0.1
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+    α=0.2
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+    α=0.3
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+  Dataset completed (4.028s)
+  Using dataset url_only
+    α=0.1
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+    α=0.2
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+    α=0.3
+      Fitting base data
+      Getting probabilities and prediction
+      Doing determinization for ROC curve
+      Calculating best Youden Index
+  Dataset completed (4.054s)
+LogisticRegression processing complete (12.124s)
+Processing NeuralNetwork classifier
+  Using dataset all
+    Using NeuralNetwork(81,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(81,1) complete
+    Using NeuralNetwork(81,14,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(81,14,1) complete
+    Using NeuralNetwork(81,7,7,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(81,7,7,1) complete
+  Dataset completed (9m38.845s)
+  Using dataset no_3rd
+    Using NeuralNetwork(74,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(74,1) complete
+    Using NeuralNetwork(74,14,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(74,14,1) complete
+    Using NeuralNetwork(74,7,7,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(74,7,7,1) complete
+  Dataset completed (10m0.083s)
+  Using dataset url_only
+    Using NeuralNetwork(55,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(55,1) complete
+    Using NeuralNetwork(55,12,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(55,12,1) complete
+    Using NeuralNetwork(55,6,6,1)
+      α=0.1
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.2
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+      α=0.3
+        Fitting base data
+        Getting probabilities and prediction
+        Doing determinization for ROC curve
+        Calculating best Youden Index
+    NeuralNetwork(55,6,6,1) complete
+  Dataset completed (9m32.345s)
+NeuralNetwork processing complete (29m11.279s)
+
+Total data-time: 29m23.403s
+
+Writing data.csv
+
+Creating plots
+  writing plots/logisticregression-all.png
+  writing plots/logisticregression-no_3rd.png
+  writing plots/logisticregression-url_only.png
+  writing plots/neuralnetwork(81,1)-all.png
+  writing plots/neuralnetwork(81,14,1)-all.png
+  writing plots/neuralnetwork(81,7,7,1)-all.png
+  writing plots/neuralnetwork(74,1)-no_3rd.png
+  writing plots/neuralnetwork(74,14,1)-no_3rd.png
+  writing plots/neuralnetwork(74,7,7,1)-no_3rd.png
+  writing plots/neuralnetwork(55,1)-url_only.png
+  writing plots/neuralnetwork(55,12,1)-url_only.png
+  writing plots/neuralnetwork(55,6,6,1)-url_only.png
+
+Running comparison algorithms:
+
+  BayesianRidge
+    Using dataset all:
+      score=0.8112644596836845
+      coefficient of determination=0.7407391486790774
+    Using dataset no_3rd:
+      score=0.7265981492168706
+      coefficient of determination=0.547570353383807
+    Using dataset url_only:
+      score=0.6935112702437112
+      coefficient of determination=0.4627144566154493
+
+  DecisionTreeClassifier
+    Using dataset all:
+      score=0.9365704286964129
+      mean accuracy=0.9365704286964129
+      AUC=0.9365803251584459
+    Using dataset no_3rd:
+      score=0.8818897637795275
+      mean accuracy=0.8818897637795275
+      AUC=0.8818843574905851
+    Using dataset url_only:
+      score=0.8674540682414698
+      mean accuracy=0.8674540682414699
+      AUC=0.8670160895257341
+
+Complete.
