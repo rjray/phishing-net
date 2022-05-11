@@ -30,6 +30,8 @@ descriptions = {
 }
 
 
+# Command-line arguments parser. There are only a few parameters in this script
+# but having them here is cleaner.
 def parse_command_line():
     parser = argparse.ArgumentParser()
 
@@ -66,6 +68,8 @@ def parse_command_line():
     return vars(parser.parse_args())
 
 
+# Measure the time elapsed between the start/end parameters and return a string
+# in human-readable format.
 def elapsed(start, end):
     e = end - start
     e_int = int(e)
@@ -86,6 +90,9 @@ def determinize(thresh, positives):
     return np.array([1 if p >= thresh else 0 for p in positives])
 
 
+# Derive the set of determinization points for the labels and the probabilities
+# given. By default will calculate 1001 points, which is tunable by the "N"
+# parameter.
 def determinization_points(labels, positives, N=1000):
     # Create an array of N+1 points with the determinization values for the
     # threshold probability at each.
@@ -103,6 +110,8 @@ def determinization_points(labels, positives, N=1000):
     return points
 
 
+# Run one combination of a model and dataset-type over one α value. Returns a
+# struct of stats-data including the points needed to plot the ROC curve.
 def run_one_model_data_combo(type, datatype, instance, ds, alpha):
     # Unlike the homework assignments, here we aren't fishing around for ideal
     # parameters before running the test evaluation. Rather, we will
@@ -153,6 +162,7 @@ def run_one_model_data_combo(type, datatype, instance, ds, alpha):
     return stats_data
 
 
+# Plot the ROC curve from the given points into the plot given by "ax".
 def plot_curve(ax, points, label, color):
     pts = np.array(points)
     ax.plot(pts[:, 0], pts[:, 1], lw=1, color=color, label=label)
@@ -160,6 +170,8 @@ def plot_curve(ax, points, label, color):
     return
 
 
+# Create the 2x2 arrangement of ROC curve plots, where each α value has its own
+# plot and the lower-right plot is the combined 3 plots.
 def generate_plots(data, title, filename):
     # Colors we'll use:
     colors = ["red", "green", "blue"]
@@ -190,6 +202,8 @@ def generate_plots(data, title, filename):
     return
 
 
+# Program main-loop. Run all the experiments, run the reference algorithms,
+# write the plots, write the CSV file of stats data.
 def main():
     args = parse_command_line()
     seed = args["seed"]

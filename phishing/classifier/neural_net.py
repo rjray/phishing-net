@@ -17,9 +17,37 @@ MAX_ITERS = 100
 
 
 class NeuralNetwork():
+    """The `NeuralNetwork` class is a basic implementation of a variable-layer
+    neural network that uses backpropagation for the learning process. It
+    expects the feature matrices to not have bias already added.
+
+    The architecture of this allows for multiple layers to be added to the
+    network. See the `Layer` class for the base class used to define layers.
+    """
+
     def __init__(
         self, *layers, lossFn=mse, dLossFn=d_mse, classify=SIGMOID
     ) -> None:
+        """Constructor for the Neural Network class. Can optionally take an
+        arbitrary list of layers to immediately add to the network. Sets up
+        slots for later use by the `fit` method.
+
+        Positional parameters:
+
+            `layers`: Zero or more instances of a layer class (one that derives
+            from `Layer`) to be added to the network in the order specified.
+
+        Keyword parameters:
+
+            `lossFn`: The loss-measuring function to use for reporting
+            `dLossFn`: The function that implements the derivative of `lossFn`,
+            used in calculating error for backpropagation
+            `classify`: Either a function to do the classification from the
+            set of prediction probabilities, or a structure from the
+            `phishing.classifier.nn_utils.activation` module that includes a
+            `classification` key to specify the classification function.
+        """
+
         self.layers = []
         self.iterations = None
         self.alpha = None
@@ -40,6 +68,14 @@ class NeuralNetwork():
         return
 
     def add(self, *layers) -> None:
+        """Add one or more layers to the calling neural network object.
+
+        Positional parameters:
+
+            `layers`: Zero or more instances of a layer class (one that derives
+            from `phishing.classifier.nn_layer.base.Layer`).
+        """
+
         for ll in layers:
             if not isinstance(ll, Layer):
                 raise ValueError(
@@ -56,10 +92,45 @@ class NeuralNetwork():
             self.layers.append(ll)
 
     def setLossFns(self, lossFn, dLossFn):
+        """Set or change the loss and loss-derivative functions used by the
+        instance for reporting and backpropagation."""
+
         self.lossFn = lossFn
         self.dLossFn = dLossFn
 
     def fit(self, X, y, *, alpha=0.1, iterations=MAX_ITERS, epsilon=None):
+        f"""Fit a model using the backpropagation algorithm. Takes the feature
+        matrix and target vector and derives the weights that can then be used
+        for later predictions.
+
+        Positional parameters:
+
+            `X`: The feature matrix, usually a Numpy or Pandas matrix instance.
+            `y`: The target vector corresponding to the values of the features.
+            in `X`
+
+        Keyword parameters:
+
+            `alpha`: The learning rate to use in the gradient descent
+            calculations, defaults to 0.1.
+            `iterations`: The number of iterations to run, rather than
+            iterating until the mean square error falls below a given ε
+            value. Defaults to {MAX_ITERS}.
+            `epsilon`: If given, a value to use in deciding when to stop
+            iterating the algorithm. Defaults to `None`.
+
+        Note that even when using the `epsilon` value, the algorithm will only
+        iterate a maximum of {MAX_ITERS} iterations.
+
+        Returns the calling object, after setting the following attributes on
+        the object:
+
+            `iterations`
+            `alpha`
+            `epsilon`
+            `audit_trail`:
+        """
+
         # Count the number of samples we're fitting with:
         num_samples = len(X)
         # If they passed a value for ε, set this Boolean so we compare against
@@ -116,6 +187,15 @@ class NeuralNetwork():
         return self
 
     def predict_proba(self, X):
+        """Calculate the prediction probabilities for the given feature matrix
+        `X`. Returns the vector of probabilities with the same dimension as the
+        first dimension of `X`.
+
+        Positional parameters:
+
+            `X`: The feature matrix, usually a Numpy matrix instance.
+        """
+
         # Count the number of samples we're predicting over:
         num_samples = len(X)
         probabilities = []
@@ -141,8 +221,22 @@ class NeuralNetwork():
         return probabilities
 
     def predict(self, X):
+        """Calculate a prediction for the given feature matrix `X`. Returns
+        the vector of predictions with the same dimension as the first
+        dimension of `X`. Each value will be one of `0` or `1`, based on the
+        predicted probability.
+
+        Positional parameters:
+
+            `X`: The feature matrix, usually a Numpy matrix instance.
+        """
+
         return self.classify(self.predict_proba(X))
 
     def reset(self):
+        """Reset the weights in all layers of the neural network, allowing it
+        to be used to fit a new model.
+        """
+
         for layer in self.layers:
             layer.reset()

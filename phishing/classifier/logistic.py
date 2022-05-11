@@ -44,7 +44,7 @@ class LogisticRegression():
             `alpha`: The learning rate to use in the gradient descent
             calculations, defaults to 0.1.
             `iterations`: The number of iterations to run, rather than
-            iterating until the mean square of deltas falls below a given ε
+            iterating until the mean square error falls below a given ε
             value. Defaults to {MAX_ITERS}.
             `epsilon`: If given, a value to use in deciding when to stop
             iterating the algorithm. Defaults to `None`.
@@ -124,7 +124,7 @@ class LogisticRegression():
 
         Positional parameters:
 
-            `X`: The feature matrix, usually a Numpy or Pandas matrix instance.
+            `X`: The feature matrix, usually a Numpy matrix instance.
         """
 
         return np.array([0 if x < 0.5 else 1 for x in self.predict_proba(X)])
