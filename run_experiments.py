@@ -7,6 +7,7 @@ _root_dir = os.path.dirname(__file__)
 sys.path.append(_root_dir)
 
 import argparse
+import csv
 import math
 import matplotlib.pyplot as plt
 import numpy as np
@@ -56,10 +57,10 @@ def parse_command_line():
     )
     parser.add_argument(
         "-s",
-        "--stats-dir",
+        "--stats-file",
         type=str,
-        default="plots",
-        help="Directory in which to write statistics data"
+        default="data.csv",
+        help="File in which to write statistics data"
     )
 
     return vars(parser.parse_args())
@@ -148,7 +149,6 @@ def run_one_model_data_combo(type, datatype, instance, ds, alpha):
     stats_data["score"] = 1 - stats_data["risk"]
     stats_data["youden"] = youden
     stats_data["curve_pts"] = curve_pts
-    stats_data["caption"] = f"{type} (data={datatype}, α={alpha})"
 
     return stats_data
 
@@ -311,7 +311,25 @@ def main():
     run_finished = timer()
     print(f"\nTotal data-time: {elapsed(run_started, run_finished)}")
 
+    print(f"\nWriting {args['stats_file']}")
+    with open(args["stats_file"], "w", newline="") as csvfile:
+        writer = csv.writer(csvfile, delimiter=",")
+        writer.writerow(
+            ["method", "dataset", "learning_rate", "auc", "score", "youden",
+             "threshold"]
+        )
+        for row in data:
+            for inst in row:
+                youden = inst["youden"]
+                writer.writerow(
+                    [inst["type"], inst["dataset"], inst["alpha"], inst["auc"],
+                     inst["score"], youden[0], youden[1]]
+                )
+
     print("\nCreating plots")
+    if not os.path.exists(args["plots_dir"]):
+        os.makedirs(args["plots_dir"])
+
     for row in data:
         type = row[0]["type"]
         dataset = row[0]["dataset"]
@@ -319,8 +337,44 @@ def main():
 
         title = f"{type} on {ds_desc}"
         filename = f"{type.lower()}-{dataset}.png"
+        filename = os.path.join(args["plots_dir"], filename)
         print(f"  writing {filename}")
         generate_plots(row, title, filename)
+
+    print("\nRunning comparison algorithms:")
+    print("\n  BayesianRidge")
+    for ds_index in range(3):
+        print(f"    Using dataset {ds_labels[ds_index]}:")
+        dataset = ds[ds_index]
+        X_base = dataset.X_base
+        y_base = dataset.y_base
+        X_test = dataset.X_test
+        y_test = dataset.y_test
+        clf = BayesianRidge().fit(X_base, y_base)
+        prediction = clf.predict(X_test)
+        score = 1 - (np.sum(np.abs(prediction - y_test)) / y_test.size)
+        cod = clf.score(X_test, y_test)
+        print(f"      score={score}")
+        print(f"      coefficient of determination={cod}")
+
+    print("\n  DecisionTreeClassifier")
+    for ds_index in range(3):
+        print(f"    Using dataset {ds_labels[ds_index]}:")
+        dataset = ds[ds_index]
+        X_base = dataset.X_base
+        y_base = dataset.y_base
+        X_test = dataset.X_test
+        y_test = dataset.y_test
+        clf = DecisionTreeClassifier().fit(X_base, y_base)
+        prediction = clf.predict(X_test)
+        score = 1 - (np.sum(np.abs(prediction - y_test)) / y_test.size)
+        ma = clf.score(X_test, y_test)
+        auc = roc_auc_score(y_test, clf.predict_proba(X_test)[:, 1])
+        print(f"      score={score}")
+        print(f"      mean accuracy={ma}")
+        print(f"      AUC={auc}")
+
+    print("\nComplete.")
 
     return
 
